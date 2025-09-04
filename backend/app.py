@@ -105,20 +105,20 @@ async def chat(request: ChatRequest, session_id: str = "default"):
         session_history = conversation_histories.get(session_id, {})
         history = session_history.get(provider, [])
 
-        # --- Check for real-time triggers ---
-        if "stock" in msg:
-            symbol = msg.split()[-1].upper()
-            response = get_stock_price(symbol)
-            return ChatResponse(response=response, provider="realtime")
+        # # --- Check for real-time triggers ---
+        # if "stock" in msg:
+        #     symbol = msg.split()[-1].upper()
+        #     response = get_stock_price(symbol)
+        #     return ChatResponse(response=response, provider="realtime")
 
-        elif "weather" in msg:
-            city = msg.split()[-1].capitalize()
-            response = get_weather(city)
-            return ChatResponse(response=response, provider="realtime")
+        # elif "weather" in msg:
+        #     city = msg.split()[-1].capitalize()
+        #     response = get_weather(city)
+        #     return ChatResponse(response=response, provider="realtime")
 
-        elif "news" in msg:
-            response = get_news()
-            return ChatResponse(response=response, provider="realtime")
+        # elif "news" in msg:
+        #     response = get_news()
+        #     return ChatResponse(response=response, provider="realtime")
 
         # --- Call LLM for normal conversation ---
         if provider not in llm_clients:

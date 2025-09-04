@@ -6,6 +6,8 @@ import './App.css';
 const API_BASE_URL = 'http://localhost:8000';
 const API_KEY = process.env.REACT_APP_API_KEY;
 
+
+
 const providers = [
   { value: 'openai', label: 'OpenAI GPT-3.5' },
   { value: 'gemini', label: 'Gemini (Image + Text)' },
@@ -36,15 +38,15 @@ function App() {
   };
   useEffect(() => { scrollToBottom(); }, [messages]);
 
-  // Add images parameter
 const sendMessage = async (messageText, images = []) => {
-  if (!messageText.trim() && images.length === 0) return; // require at least text or image
+  if (!messageText.trim() && images.length === 0) return;
 
   const userMessage = {
     id: Date.now(),
-    text: messageText || (images.length > 0 ? "📷 Image sent" : ""),
+    text: messageText,
     sender: 'user',
-    provider: selectedProvider
+    provider: selectedProvider,
+    images: images // <-- include images
   };
   setMessages(prev => [...prev, userMessage]);
   setIsLoading(true);
@@ -56,7 +58,7 @@ const sendMessage = async (messageText, images = []) => {
         'Content-Type': 'application/json',
         'x-api-key': API_KEY
       },
-      body: JSON.stringify({ provider: selectedProvider, message: messageText, images }) // send images
+      body: JSON.stringify({ provider: selectedProvider, message: messageText, images })
     });
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -66,23 +68,26 @@ const sendMessage = async (messageText, images = []) => {
       id: Date.now() + 1,
       text: data.response,
       sender: 'assistant',
-      provider: data.provider
+      provider: data.provider,
+      images: data.images || [] // <-- also allow images from API
     };
     setMessages(prev => [...prev, assistantMessage]);
-
   } catch (error) {
     console.error('Error sending message:', error);
-    setMessages(prev => [...prev, {
+    const errorMessage = {
       id: Date.now() + 1,
-      text: `❌ Error: ${error.message}. Make sure backend is running`,
+      text: `❌ Error: ${error.message}.`,
       sender: 'assistant',
-      provider: 'error'
-    }]);
+      provider: 'error',
+      images: []
+    };
+    setMessages(prev => [...prev, errorMessage]);
   } finally {
     setIsLoading(false);
     setMessage("");
   }
 };
+
 
 
   // --- Provider change ---
