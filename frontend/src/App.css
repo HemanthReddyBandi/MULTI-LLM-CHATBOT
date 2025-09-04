@@ -1,0 +1,235 @@
+/* Custom styles for the Multi-LLM Chatbot */
+
+/* Import Montserrat font */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+/* Smooth scrolling for the chat window */
+.chat-container {
+  scroll-behavior: smooth;
+  scrollbar-width: thin; /* Firefox support */
+  scrollbar-color: #c1c1c1 #f1f1f1; /* Firefox support */
+}
+
+/* Custom scrollbar for webkit browsers */
+.chat-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Animation for loading dots */
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+/* Custom focus styles */
+input:focus,
+button:focus {
+  outline: none;
+}
+
+/* Transition effects */
+.transition-colors {
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .max-w-4xl {
+    max-width: 100%;
+  }
+}
+
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  background-size: 200% 200%; /* Added for animation */
+  background-position: 0% 50%; /* Added for animation */
+  animation: bgMove 10s infinite alternate;
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.chat-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 900px; /* Increased from 600px */
+  margin: 40px auto 0 auto;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  padding: 48px; /* Increased from 32px */
+  backdrop-filter: blur(8px);
+}
+
+.title {
+  text-align: center;
+  color: #fff;
+  font-size: 2.5rem;
+  margin-bottom: 24px;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 2px;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 24px;
+}
+
+.message {
+  padding: 12px 18px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 1.1rem;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.voice-btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #36d1c4 0%, #5b86e5 100%);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-left: 4px;
+  transition: transform 0.2s;
+}
+
+.voice-btn:hover {
+  transform: scale(1.08);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+  background: rgba(255,255,255,0.7);
+}
+
+.send-btn {
+  position: relative;
+  padding: 12px 28px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #ff512f 0%, #dd2476 100%);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.send-btn:hover {
+  transform: scale(1.08);
+}
+
+.send-btn:active .send-anim,
+.send-btn:focus .send-anim {
+  animation: sendPulse 0.4s;
+}
+
+.send-anim {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+@keyframes sendPulse {
+  0% { width: 0; height: 0; opacity: 1;}
+  80% { width: 80px; height: 80px; opacity: 0.4;}
+  100% { width: 0; height: 0; opacity: 0;}
+}
+
+.footer {
+  text-align: center;
+  padding: 18px 0;
+  color: #fff;
+  font-size: 1.1rem;
+  background: rgba(30, 60, 114, 0.7);
+  letter-spacing: 1px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.heart {
+  color: #ff512f;
+  font-size: 1.2em;
+}
+
+.send-emoji {
+  display: inline-block;
+  font-size: 1.5em;
+  vertical-align: middle;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.3);
+  }
+}

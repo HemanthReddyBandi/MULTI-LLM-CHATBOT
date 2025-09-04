@@ -1,0 +1,31 @@
+{
+  "name": "multi-llm-chatbot",
+  "version": "1.0.0",
+  "description": "A full-stack chatbot that integrates multiple LLM providers",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && python -m uvicorn app:app --reload --host 0.0.0.0 --port 8000",
+    "frontend": "cd frontend && npm start",
+    "install-backend": "pip install -r requirements.txt",
+    "install-frontend": "cd frontend && npm install",
+    "install-all": "npm run install-backend && npm run install-frontend",
+    "build": "cd frontend && npm run build",
+    "start": "npm run dev"
+  },
+  "keywords": [
+    "chatbot",
+    "llm",
+    "openai",
+    "anthropic",
+    "gemini",
+    "llama",
+    "react",
+    "fastapi"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
