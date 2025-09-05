@@ -27,6 +27,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Auth includes (renamed to avoid conflicts)
+from auth_module.router import router as auth_router
+from auth_module.database import engine
+from auth_module.models import Base
+
 # Request/Response models
 class ChatRequest(BaseModel):
     provider: str
@@ -86,6 +91,17 @@ def get_news() -> str:
 @app.get("/")
 async def root():
     return {"message": "🚀 Multi-LLM + Real-Time Chatbot API is running!"}
+
+# Include auth routes
+app.include_router(auth_router, prefix="", tags=["auth"])
+
+@app.on_event("startup")
+async def on_startup():
+    if Base and engine:
+        try:
+            Base.metadata.create_all(bind=engine)
+        except Exception:
+            pass
 
 @app.get("/providers")
 async def get_providers():
@@ -147,3 +163,4 @@ async def chat(request: ChatRequest, session_id: str = "default"):
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"❌ Error: {str(e)}")
+ 

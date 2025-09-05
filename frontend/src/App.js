@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ChatWindow from './components/ChatWindow';
 import Dropdown from './components/Dropdown';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import './App.css';
+import { getToken } from './services/auth';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 
@@ -14,7 +18,7 @@ const providers = [
   { value: 'deepseek', label: 'DeepSeek AI' }
 ];
 
-function App() {
+function ChatApp() {
   // --- Session ID for conversation continuity ---
   const [sessionId] = useState("sess-" + Math.random().toString(36).substring(2, 10));
 
@@ -52,11 +56,13 @@ const sendMessage = async (messageText, images = []) => {
   setIsLoading(true);
 
   try {
+    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
     const response = await fetch(`${API_BASE_URL}/chat?session_id=${sessionId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_KEY
+        'x-api-key': API_KEY,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
       },
       body: JSON.stringify({ provider: selectedProvider, message: messageText, images })
     });
@@ -158,6 +164,38 @@ const sendMessage = async (messageText, images = []) => {
         &copy; Hemanth Reddy Bandi 2025
       </footer>
     </div>
+  );
+}
+
+function AppRouter() {
+  const location = useLocation();
+  const [token, setToken] = useState(getToken());
+
+  useEffect(() => {
+    const handleStorage = () => setToken(getToken());
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  useEffect(() => {
+    setToken(getToken());
+  }, [location]);
+
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/" element={token ? <ChatApp /> : <Navigate to="/register" replace />} />
+      <Route path="*" element={<Navigate to={token ? '/' : '/register'} replace />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
   );
 }
 
