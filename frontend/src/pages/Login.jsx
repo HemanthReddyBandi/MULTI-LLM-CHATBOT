@@ -28,13 +28,13 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-blue-50 px-4">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-700 via-purple-700 to-blue-700 px-4">
       {/* animated background blobs */}
-      <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-300 opacity-30 rounded-full blur-3xl animate-blob"></div>
-      <div className="absolute top-1/3 -right-16 w-80 h-80 bg-purple-300 opacity-30 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
-      <div className="absolute -bottom-24 left-1/4 w-72 h-72 bg-blue-300 opacity-30 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+      <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-400 opacity-50 rounded-full blur-3xl animate-blob"></div>
+      <div className="absolute top-1/3 -right-16 w-80 h-80 bg-fuchsia-400 opacity-50 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+      <div className="absolute -bottom-24 left-1/4 w-72 h-72 bg-sky-400 opacity-50 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
 
-      <div className="relative w-full max-w-md bg-white/80 backdrop-blur-md rounded-xl shadow-xl p-8 border border-white/40">
+      <div className="relative w-full max-w-md bg-white/85 backdrop-blur-md rounded-xl shadow-2xl p-8 border border-white/40">
         <h2 className="text-2xl font-bold text-gray-900 text-center">Welcome back</h2>
         <p className="text-sm text-gray-500 text-center mt-1">Login to your account</p>
 

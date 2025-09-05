@@ -2,10 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ChatWindow from './components/ChatWindow';
 import Dropdown from './components/Dropdown';
+import NewsPanel from './components/NewsPanel';
+import WeatherPanel from './components/WeatherPanel';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import './App.css';
-import { getToken } from './services/auth';
+import { getToken, logout } from './services/auth';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 const API_KEY = process.env.REACT_APP_API_KEY;
@@ -15,7 +17,9 @@ const API_KEY = process.env.REACT_APP_API_KEY;
 const providers = [
   { value: 'openai', label: 'OpenAI GPT-3.5' },
   { value: 'gemini', label: 'Gemini (Image + Text)' },
-  { value: 'deepseek', label: 'DeepSeek AI' }
+  { value: 'deepseek', label: 'DeepSeek AI' },
+  { value: 'news', label: 'News (Top Headlines)' }
+  ,{ value: 'weather', label: 'Weather (Realtime)' }
 ];
 
 function ChatApp() {
@@ -56,28 +60,48 @@ const sendMessage = async (messageText, images = []) => {
   setIsLoading(true);
 
   try {
-    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
-    const response = await fetch(`${API_BASE_URL}/chat?session_id=${sessionId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-      },
-      body: JSON.stringify({ provider: selectedProvider, message: messageText, images })
-    });
+    if (selectedProvider === 'news') {
+      // Use news combined endpoint and echo concise results
+      const qs = new URLSearchParams({ q: messageText });
+      const res = await fetch(`${API_BASE_URL}/news/combined?${qs.toString()}`);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      const data = await res.json();
+      const articles = (data.headlines && data.headlines.articles) || [];
+      const top = articles.slice(0, 5);
+      const lines = top.map((a, i) => `${i + 1}. ${a.title || 'Untitled'}${a.source?.name ? ` (${a.source.name})` : ''}`).join('\n');
+      const reply = lines || 'No matching news found.';
+      const assistantMessage = {
+        id: Date.now() + 1,
+        text: reply,
+        sender: 'assistant',
+        provider: 'news',
+        images: []
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    } else {
+      const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+      const response = await fetch(`${API_BASE_URL}/chat?session_id=${sessionId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API_KEY,
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ provider: selectedProvider, message: messageText, images })
+      });
 
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const data = await response.json();
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
 
-    const assistantMessage = {
-      id: Date.now() + 1,
-      text: data.response,
-      sender: 'assistant',
-      provider: data.provider,
-      images: data.images || [] // <-- also allow images from API
-    };
-    setMessages(prev => [...prev, assistantMessage]);
+      const assistantMessage = {
+        id: Date.now() + 1,
+        text: data.response,
+        sender: 'assistant',
+        provider: data.provider,
+        images: data.images || []
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+    }
   } catch (error) {
     console.error('Error sending message:', error);
     const errorMessage = {
@@ -134,26 +158,40 @@ const sendMessage = async (messageText, images = []) => {
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
             <h1 className="text-3xl font-bold text-center mb-4">Multi-LLM Chatbot</h1>
-            <div className="flex justify-center">
+            <div className="flex justify-center items-center gap-3">
               <Dropdown
                 options={providers}
                 value={selectedProvider}
                 onChange={handleProviderChange}
                 label="Select LLM Provider"
               />
+              <button
+                type="button"
+                onClick={() => { logout(); window.location.href = '/login'; }}
+                className="px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-md border border-white/30 transition-colors"
+                title="Logout"
+              >
+                Logout
+              </button>
             </div>
           </div>
 
-          {/* Chat Window */}
-          <ChatWindow
-            messages={messages}
-            isLoading={isLoading}
-            onSendMessage={sendMessage}
-            selectedProvider={selectedProvider}
-            message={message}
-            setMessage={setMessage}
-            onVoiceInput={handleVoiceInput}
-          />
+          {/* Chat Window or News Panel */}
+          {selectedProvider === 'news' ? (
+            <NewsPanel />
+          ) : selectedProvider === 'weather' ? (
+            <WeatherPanel />
+          ) : (
+            <ChatWindow
+              messages={messages}
+              isLoading={isLoading}
+              onSendMessage={sendMessage}
+              selectedProvider={selectedProvider}
+              message={message}
+              setMessage={setMessage}
+              onVoiceInput={handleVoiceInput}
+            />
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -181,12 +219,36 @@ function AppRouter() {
     setToken(getToken());
   }, [location]);
 
+  // Validate token with backend; clear if invalid
+  useEffect(() => {
+    const validate = async () => {
+      const current = getToken();
+      if (!current) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/me`, {
+          headers: { 'Authorization': `Bearer ${current}` }
+        });
+        if (!res.ok) {
+          localStorage.removeItem('auth_token');
+          sessionStorage.removeItem('auth_token');
+          setToken(null);
+        }
+      } catch (_) {
+        // Network errors: treat as invalid to force login
+        localStorage.removeItem('auth_token');
+        sessionStorage.removeItem('auth_token');
+        setToken(null);
+      }
+    };
+    validate();
+  }, []);
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/" element={token ? <ChatApp /> : <Navigate to="/register" replace />} />
-      <Route path="*" element={<Navigate to={token ? '/' : '/register'} replace />} />
+      <Route path="/" element={token ? <ChatApp /> : <Navigate to="/login" replace />} />
+      <Route path="*" element={<Navigate to={token ? '/' : '/login'} replace />} />
     </Routes>
   );
 }

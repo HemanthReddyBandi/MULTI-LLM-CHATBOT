@@ -2,8 +2,8 @@
 import requests
 import os
 
-# Load your News API key from environment or hardcode temporarily
-NEWS_API_KEY = os.environ.get("NEWS_API_KEY", "YOUR_API_KEY_HERE")
+# Load your News API key from environment
+NEWS_API_KEY = os.environ.get("NEWS_API_KEY") or os.environ.get("NEWSAPI_KEY")
 
 class NewsClient:
     def __init__(self, api_key=None):
@@ -21,18 +21,32 @@ class NewsClient:
         params = {
             "country": country,
             "apiKey": self.api_key,
+            "pageSize": max(1, min(100, int(limit or 5))),
         }
         if category:
             params["category"] = category
 
         try:
+            if not self.api_key:
+                return [], "Missing NEWS_API_KEY. Set it in backend/.env and restart."
+
             response = requests.get(self.base_url, params=params, timeout=10)
-            response.raise_for_status()
-            articles = response.json().get("articles", [])
-            return articles[:limit]
+            if response.status_code != 200:
+                try:
+                    body = response.json()
+                except Exception:
+                    body = {"raw": response.text}
+                return [], f"HTTP {response.status_code}: {body}"
+
+            data = response.json()
+            status = data.get("status")
+            if status != "ok":
+                return [], f"API status: {status} details: {data}"
+
+            articles = data.get("articles", [])
+            return articles[:limit], None
         except requests.exceptions.RequestException as e:
-            print(f"Error fetching news: {e}")
-            return []
+            return [], f"Request error: {e}"
 
 # Example usage
 if __name__ == "__main__":

@@ -32,8 +32,13 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-sky-700 via-indigo-700 to-blue-700 px-4">
+      {/* animated background blobs */}
+      <div className="absolute -top-24 -left-16 w-80 h-80 bg-sky-400 opacity-50 rounded-full blur-3xl animate-blob"></div>
+      <div className="absolute top-1/4 -right-20 w-72 h-72 bg-indigo-400 opacity-50 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+      <div className="absolute -bottom-28 left-1/3 w-80 h-80 bg-cyan-400 opacity-50 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+
+      <div className="relative w-full max-w-md bg-white/85 backdrop-blur-md rounded-xl shadow-2xl p-8 border border-white/40">
         <h2 className="text-2xl font-bold text-gray-900 text-center">Create an account</h2>
         <p className="text-sm text-gray-500 text-center mt-1">Register to continue</p>
 
