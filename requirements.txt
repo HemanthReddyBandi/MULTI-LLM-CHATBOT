@@ -1,7 +1,8 @@
 # FastAPI and server dependencies
 fastapi>=0.100.0
 uvicorn[standard]>=0.20.0
-pydantic>=2.0.0
+pydantic[email]>=2.0.0
+email-validator>=2.1.0.post1  # explicitly add to avoid ImportError
 
 # CORS middleware
 python-multipart>=0.0.5
