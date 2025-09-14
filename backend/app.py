@@ -32,9 +32,9 @@ app.add_middleware(
 )
 
 # Auth includes (renamed to avoid conflicts)
-from auth_module.router import router as auth_router
-from auth_module.database import engine
-from auth_module.models import Base
+from .auth_module.router import router as auth_router
+from .auth_module.database import engine
+from .auth_module.models import Base
 
 # Request/Response models
 class ChatRequest(BaseModel):
