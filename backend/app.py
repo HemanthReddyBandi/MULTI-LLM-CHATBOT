@@ -13,11 +13,11 @@ ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(dotenv_path=ENV_PATH, override=True)
 
 # Import LLM clients
-from llm_providers.openai_client import OpenAIClient
-from llm_providers.gemini_client import GeminiClient
-from llm_providers.deepseek_client import DeepSeekClient
-from llm_providers.news_client import NewsClient
-from llm_providers.weather_client import WeatherClient
+from backend.llm_providers.openai_client import OpenAIClient
+from backend.llm_providers.gemini_client import GeminiClient
+from backend.llm_providers.deepseek_client import DeepSeekClient
+from backend.llm_providers.news_client import NewsClient
+from backend.llm_providers.weather_client import WeatherClient
 
 # Initialize FastAPI
 app = FastAPI(title="Multi-LLM + Real-Time Chatbot API")
