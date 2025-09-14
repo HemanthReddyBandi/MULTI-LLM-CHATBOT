@@ -51,11 +51,13 @@ const WeatherPanel = ({ defaultCity = 'Hyderabad', refreshMs = 60000 }) => {
       <section className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-1 bg-white/80 backdrop-blur rounded-xl shadow p-6">
           <h4 className="text-xl font-semibold mb-3">Current</h4>
-          {loading ? <div className="text-sm text-gray-500">Loading...</div> : error ? <div className="text-sm text-red-600">{error}</div> : current ? (
+          {loading ? <div className="text-sm text-gray-500">Loading...</div> : error ? <div className="text-sm text-red-600">{error}</div> : (current && current.main) ? (
             <div>
               <div className="text-3xl font-bold">{Math.round(current.main.temp)}°{units === 'metric' ? 'C' : 'F'}</div>
               <div className="text-gray-700 mt-1">{current.weather?.[0]?.description}</div>
-              <div className="text-sm text-gray-500 mt-2">{current.name}, {current.sys?.country}</div>
+              <div className="text-sm text-gray-500 mt-2">
+                {current.resolved_name ? current.resolved_name : `${current.name}, ${current.sys?.country}`}
+              </div>
               <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                 <div>Feels: {Math.round(current.main.feels_like)}°</div>
                 <div>Humidity: {current.main.humidity}%</div>
@@ -63,7 +65,7 @@ const WeatherPanel = ({ defaultCity = 'Hyderabad', refreshMs = 60000 }) => {
                 <div>Pressure: {current.main.pressure} hPa</div>
               </div>
             </div>
-          ) : null}
+          ) : <div className="text-sm text-red-600">No weather data available.</div>}
         </div>
         <div className="md:col-span-2 bg-white/80 backdrop-blur rounded-xl shadow p-6">
           <h4 className="text-xl font-semibold mb-3">Forecast (next 24h)</h4>

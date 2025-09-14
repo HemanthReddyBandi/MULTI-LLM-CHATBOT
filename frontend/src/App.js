@@ -16,7 +16,7 @@ const API_KEY = process.env.REACT_APP_API_KEY;
 
 const providers = [
   { value: 'openai', label: 'OpenAI GPT-3.5' },
-  { value: 'gemini', label: 'Gemini (Image + Text)' },
+  { value: 'gemini', label: 'Gemini (Image Describer)' },
   { value: 'deepseek', label: 'DeepSeek AI' },
   { value: 'news', label: 'News (Top Headlines)' }
   ,{ value: 'weather', label: 'Weather (Realtime)' }
