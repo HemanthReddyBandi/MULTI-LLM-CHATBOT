@@ -1,5 +1,8 @@
 🤖 Introducing My Project: Multi-LLM + Real-Time Chatbot
 
+🔗 LinkedIn Post:
+👉 https://www.linkedin.com/posts/hemanth-reddy-bandi_ai-chatbot-llm-activity-7381162508037840896-F4SC?utm_source=share&utm_medium=member_android&rcm=ACoAADyI99QB490eOANu7SEJb1TNrYDblZh0zrw
+
 I’m thrilled to share my latest full-stack project — a Multi-LLM Chatbot that integrates multiple AI models and real-time data sources into one intelligent platform!
 <img src="Screenshot (10).png">
 
